@@ -7,6 +7,10 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Ruta de certificación
+
+Este repositorio se usa para preparar las certificaciones **Junior** y **Mid-Level** de Laravel, en ese orden. La secuencia de estudio, los ejercicios y los criterios para avanzar están en [RUTA_CERTIFICACION.md](RUTA_CERTIFICACION.md).
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
