@@ -325,7 +325,7 @@ Usar esta tabla como marcador de progreso:
 
 | Bloque | Estado | Evidencia |
 | --- | --- | --- |
-| J1. Entorno, configuración y Artisan | Pendiente | |
+| J1. Entorno, configuración y Artisan | Completado | Configuración mediante `config()`; comando `study:status` con argumento, opción y 3 pruebas Pest |
 | J2. Base de datos, migraciones y Eloquent CRUD | Pendiente | |
 | J3. Routing y controllers | Pendiente | |
 | J4. Blade, formularios y validación | Pendiente | |
