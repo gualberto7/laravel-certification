@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\Project;
+use App\Models\Task;
 
 test('dashboard route returns correct response', function () {
     $response = $this->get('/');
 
-    $response->assertStatus(200)
+    $response->assertSuccessful()
         ->assertSee('Dashboard');
 });
 
@@ -14,7 +15,7 @@ test('project show route returns correct response', function () {
 
     $response = $this->get(route('projects.show', $project));
 
-    $response->assertStatus(200)
+    $response->assertSuccessful()
         ->assertJson([
             'id' => $project->id,
             'name' => $project->name,
@@ -24,7 +25,7 @@ test('project show route returns correct response', function () {
 test('project show route returns 404 for non-existent project', function () {
     $response = $this->get(route('projects.show', ['project' => 999]));
 
-    $response->assertStatus(404);
+    $response->assertNotFound();
 });
 
 test('task show route returns correct response', function () {
@@ -35,10 +36,19 @@ test('task show route returns correct response', function () {
 
     $response = $this->get(route('projects.tasks.show', [$project, $task]));
 
-    $response->assertStatus(200)
+    $response->assertSuccessful()
         ->assertJson([
             'project_id' => $project->id,
             'task_id' => $task->id,
             'title' => $task->title,
         ]);
+});
+
+test('a task must belong to the project in the route', function () {
+    $project = Project::factory()->create();
+    $differentProject = Project::factory()->create();
+    $task = Task::factory()->for($differentProject)->create();
+
+    $this->get(route('projects.tasks.show', [$project, $task]))
+        ->assertNotFound();
 });

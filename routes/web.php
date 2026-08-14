@@ -9,4 +9,5 @@ Route::get('/', DashboardController::class)->name('home');
 
 Route::resource('projects', ProjectController::class);
 
-Route::resource('projects.tasks', TaskController::class);
+Route::resource('projects.tasks', TaskController::class)
+    ->scoped();
