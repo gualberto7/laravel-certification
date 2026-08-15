@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
-        //
+        $projects = Project::query()
+            ->withCount('tasks')
+            ->latest()
+            ->get();
+
+        return view('projects.index', [
+            'projects' => $projects,
+        ]);
     }
 
     /**

@@ -52,3 +52,13 @@ test('a task must belong to the project in the route', function () {
     $this->get(route('projects.tasks.show', [$project, $task]))
         ->assertNotFound();
 });
+
+test('project index route returns correct response', function () {
+    $project = Project::factory()->create();
+
+    $this->get(route('projects.index'))
+        ->assertSuccessful()
+        ->assertViewIs('projects.index')
+        ->assertViewHas('projects')
+        ->assertSee($project->name);
+});
