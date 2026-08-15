@@ -327,7 +327,7 @@ Usar esta tabla como marcador de progreso:
 | --- | --- | --- |
 | J1. Entorno, configuración y Artisan | Completado | Configuración mediante `config()`; comando `study:status` con argumento, opción y 3 pruebas Pest |
 | J2. Base de datos, migraciones y Eloquent CRUD | Completado | 4 migraciones; relaciones, factories, seeders, scopes y eager loading; 7 pruebas y 23 aserciones |
-| J3. Routing y controllers | En curso | Mapa inicial revisado: una ruta web y ningún controller de aplicación |
+| J3. Routing y controllers | Completado | Controllers resource e invocable; rutas nombradas y anidadas con scoped binding; 12 pruebas y 31 aserciones |
 | J4. Blade, formularios y validación | Pendiente | |
 | J5. Autenticación y middleware | Pendiente | |
 | J6. Collections, cache y colas | Pendiente | |
