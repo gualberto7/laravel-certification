@@ -15,7 +15,7 @@
 
     <div class="mt-6 grid gap-4">
         @forelse ($projects as $project)
-            <article class="rounded-lg bg-white p-5 shadow-sm">
+            <x-card>
                 <a
                     href="{{ route('projects.show', $project) }}"
                     class="text-lg font-semibold"
@@ -27,7 +27,7 @@
                     {{ $project->tasks_count }}
                     {{ Str::plural('task', $project->tasks_count) }}
                 </p>
-            </article>
+            </x-card>
         @empty
             <p>No projects yet.</p>
         @endforelse

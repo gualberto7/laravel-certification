@@ -11,15 +11,20 @@ test('dashboard route returns correct response', function () {
 });
 
 test('project show route returns correct response', function () {
-    $project = Project::factory()->create();
+    $project = Project::factory()->create([
+        'name' => 'Certification project',
+    ]);
 
-    $response = $this->get(route('projects.show', $project));
+    Task::factory()->for($project)->create([
+        'title' => 'Learn Blade',
+    ]);
 
-    $response->assertSuccessful()
-        ->assertJson([
-            'id' => $project->id,
-            'name' => $project->name,
-        ]);
+    $this->get(route('projects.show', $project))
+        ->assertSuccessful()
+        ->assertViewIs('projects.show')
+        ->assertViewHas('project')
+        ->assertSee('Certification project')
+        ->assertSee('Learn Blade');
 });
 
 test('project show route returns 404 for non-existent project', function () {

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -43,11 +42,12 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project): JsonResponse
+    public function show(Project $project): View
     {
-        return response()->json([
-            'id' => $project->id,
-            'name' => $project->name,
+        $project->load('tasks.tags');
+
+        return view('projects.show', [
+            'project' => $project,
         ]);
     }
 
