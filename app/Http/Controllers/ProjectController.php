@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
@@ -63,17 +63,24 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project)
+    public function edit(Project $project): View
     {
-        //
+        return view('projects.edit', [
+            'project' => $project,
+            'users' => User::orderBy('name')->get(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        //
+        $project->update($request->validated());
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('status', 'Project updated.');
     }
 
     /**

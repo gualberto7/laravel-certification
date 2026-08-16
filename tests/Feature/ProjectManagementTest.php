@@ -49,3 +49,43 @@ test('a project requires an existing owner and a name', function () {
 
     expect(Project::query()->count())->toBe(0);
 });
+
+test('a project can be updated', function () {
+    $project = Project::factory()->create();
+
+    $response = $this->patch(route('projects.update', $project), [
+        'user_id' => $project->user_id,
+        'name' => 'Updated project name',
+        'description' => 'Updated project description',
+    ]);
+
+    $response
+        ->assertRedirectToRoute('projects.show', $project)
+        ->assertSessionHas('status', 'Project updated.');
+
+    $this->assertDatabaseHas('projects', [
+        'id' => $project->id,
+        'name' => 'Updated project name',
+        'description' => 'Updated project description',
+    ]);
+});
+
+test('update project page show the project values', function () {
+    $user = User::factory()->create([
+        'name' => 'Taylor Otwell',
+    ]);
+
+    $project = Project::factory()->create([
+        'user_id' => $user->id,
+        'name' => 'Original project name',
+        'description' => 'Original project description',
+    ]);
+
+    $this->get(route('projects.edit', $project))
+        ->assertSuccessful()
+        ->assertViewIs('projects.edit')
+        ->assertViewHas('project', $project)
+        ->assertSee('Original project name')
+        ->assertSee('Original project description')
+        ->assertSee('Taylor Otwell');
+});

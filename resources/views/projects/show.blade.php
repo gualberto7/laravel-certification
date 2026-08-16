@@ -5,7 +5,13 @@
 @section('content')
     <div class="grid gap-6">
         <header>
-            <h1 class="text-3xl font-bold">{{ $project->name }}</h1>
+            <div class="flex items-center justify-between gap-4">
+                <h1 class="text-3xl font-bold">{{ $project->name }}</h1>
+
+                <a href="{{ route('projects.edit', $project) }}">
+                    Update project
+                </a>
+            </div>
 
             @if ($project->description)
                 <p class="mt-2 text-slate-600">
