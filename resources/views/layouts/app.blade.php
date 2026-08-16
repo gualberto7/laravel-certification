@@ -20,6 +20,11 @@
     </nav>
 
     <main class="mx-auto max-w-5xl px-6 py-8">
+        @if (session('status'))
+            <div class="mb-6 rounded-lg bg-emerald-100 p-4 text-emerald-800">
+                {{ session('status') }}
+            </div>
+        @endif
         @yield('content')
     </main>
 </body>
