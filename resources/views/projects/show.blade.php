@@ -34,7 +34,30 @@
             <div class="mt-4 grid gap-4">
                 @forelse ($project->tasks as $task)
                     <x-card>
-                        <h3 class="font-semibold">{{ $task->title }}</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <h3 class="font-semibold">{{ $task->title }}</h3>
+                                <small>{{ $task->due_at }}</small>
+                            </div>
+                            <div>
+                                <a
+                                    href="{{ route('projects.tasks.edit', [$project, $task]) }}"
+                                    class="text-xs"
+                                >
+                                    Edit
+                                </a>
+                                <form
+                                    method="POST"
+                                    action="{{ route('projects.tasks.destroy', [$project, $task]) }}"
+                                    class="text-xs"
+                                >
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button>Delete</button>
+                                </form>
+                            </div>
+                        </div>
 
                         <div class="mt-2 flex flex-wrap gap-2">
                             @foreach ($task->tags as $tag)

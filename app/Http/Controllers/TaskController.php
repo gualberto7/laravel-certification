@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TaskController extends Controller
@@ -57,24 +57,35 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project, Task $task)
+    public function edit(Project $project, Task $task): View
     {
-        //
+        return view('tasks.edit', [
+            'project' => $project,
+            'task' => $task,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project, Task $task)
+    public function update(UpdateTaskRequest $request, Project $project, Task $task): RedirectResponse
     {
-        //
+        $task->update($request->validated());
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('status', 'Task updated');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, Task $task)
+    public function destroy(Project $project, Task $task): RedirectResponse
     {
-        //
+        $task->delete();
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('status', 'Task deleted');
     }
 }
