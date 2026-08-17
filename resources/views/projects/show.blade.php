@@ -21,7 +21,15 @@
         </header>
 
         <section>
-            <h2 class="text-xl font-semibold">Tasks</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold">Tasks</h2>
+                <a
+                    href="{{ route('projects.tasks.create', $project) }}"
+                    class="rounded bg-blue-500 px-3 py-1 text-white"
+                >
+                    Create task
+                </a>
+            </div>
 
             <div class="mt-4 grid gap-4">
                 @forelse ($project->tasks as $task)
