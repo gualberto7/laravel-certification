@@ -2,19 +2,25 @@
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 
 test('create task page displays the project title', function () {
+    $user = User::factory()->create();
     $project = Project::factory()->create([
         'name' => 'Certification project',
+        'user_id' => $user->id,
     ]);
 
+    $this->actingAs($user);
     $this->get(route('projects.tasks.create', $project))
         ->assertSuccessful()
         ->assertSee('Certification project');
 });
 
 test('validation errors are displayed when creating a task', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
 
     $this->post(route('projects.tasks.store', $project), [
         'title' => '',
@@ -31,7 +37,9 @@ test('validation errors are displayed when creating a task', function () {
 });
 
 test('a task can be created for a project', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
 
     $response = $this->post(route('projects.tasks.store', $project), [
         'title' => 'New task',
@@ -53,8 +61,10 @@ test('a task can be created for a project', function () {
 });
 
 test('edit page displays the correct task', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
     $task = Task::factory()->create(['project_id' => $project->id]);
+    $this->actingAs($user);
 
     $response = $this->get(route('projects.tasks.edit', [$project, $task]));
 
@@ -68,8 +78,10 @@ test('edit page displays the correct task', function () {
 });
 
 test('a task can be updated', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
     $task = Task::factory()->create(['project_id' => $project->id]);
+    $this->actingAs($user);
 
     $response = $this->patch(
         route('projects.tasks.update', [$project, $task]),
@@ -89,8 +101,10 @@ test('a task can be updated', function () {
 });
 
 test('a task can be deleted', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
     $task = Task::factory()->create(['project_id' => $project->id]);
+    $this->actingAs($user);
 
     $response = $this->delete(route('projects.tasks.destroy', [$project, $task]));
 

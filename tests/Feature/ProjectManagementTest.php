@@ -3,11 +3,16 @@
 use App\Models\Project;
 use App\Models\User;
 
+test('guests are redirected to login', function () {
+    $this->get(route('projects.index'))
+        ->assertRedirectToRoute('login');
+});
+
 test('a user can create a project', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
 
     $response = $this->post(route('projects.store'), [
-        'user_id' => $user->id,
         'name' => 'Certification project',
         'description' => 'Practice application',
     ]);
@@ -15,6 +20,8 @@ test('a user can create a project', function () {
     $project = Project::query()
         ->where('name', 'Certification project')
         ->firstOrFail();
+
+    expect($project->user->is($user))->toBeTrue();
 
     $response
         ->assertRedirectToRoute('projects.show', $project)
@@ -24,37 +31,24 @@ test('a user can create a project', function () {
 });
 
 test('create project page shows the available owners', function () {
-    User::factory()->create([
-        'name' => 'Taylor Otwell',
-    ]);
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
     $this->get(route('projects.create'))
         ->assertSuccessful()
         ->assertViewIs('projects.create')
-        ->assertViewHas('users')
-        ->assertSee('Taylor Otwell');
-});
-
-test('a project requires an existing owner and a name', function () {
-    $this->post(route('projects.store'), [
-        'user_id' => 999999,
-        'name' => '',
-        'description' => str_repeat('a', 2001),
-    ])
-        ->assertSessionHasErrors([
-            'user_id',
-            'name',
-            'description',
-        ]);
-
-    expect(Project::query()->count())->toBe(0);
+        ->assertSee('Create project')
+        ->assertSee('Name')
+        ->assertSee('Description')
+        ->assertSee('Create project');
 });
 
 test('a project can be updated', function () {
     $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
     $response = $this->patch(route('projects.update', $project), [
-        'user_id' => $project->user_id,
         'name' => 'Updated project name',
         'description' => 'Updated project description',
     ]);
@@ -71,9 +65,8 @@ test('a project can be updated', function () {
 });
 
 test('update project page show the project values', function () {
-    $user = User::factory()->create([
-        'name' => 'Taylor Otwell',
-    ]);
+    $user = User::factory()->create();
+    $this->actingAs($user);
 
     $project = Project::factory()->create([
         'user_id' => $user->id,
@@ -87,5 +80,25 @@ test('update project page show the project values', function () {
         ->assertViewHas('project', $project)
         ->assertSee('Original project name')
         ->assertSee('Original project description')
-        ->assertSee('Taylor Otwell');
+        ->assertSee('Update project');
+});
+
+test('a user can see only their own projects', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Project::factory()->create([
+        'user_id' => $user->id,
+        'name' => 'User project',
+    ]);
+
+    Project::factory()->create([
+        'name' => 'Other project',
+    ]);
+
+    $this->get(route('projects.index'))
+        ->assertSuccessful()
+        ->assertViewIs('projects.index')
+        ->assertSee('User project')
+        ->assertDontSee('Other project');
 });

@@ -7,7 +7,6 @@
     
     <x-card class="mt-6">
         <x-project-form
-            :users="$users"
             :project="$project"
         />
     </x-card>

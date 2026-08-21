@@ -18,12 +18,15 @@
             <a href="{{ route('projects.index') }}">Projects</a>
         </div>
 
-        <form action="{{ route('logout') }}" method="POST" class="ml-auto">
-            @csrf
-            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-2 rounded">
-                Log out
-            </button>
-        </form>
+        <div class="flex max-w-5xl items-center gap-6 py-4">
+            <span>{{ auth()->user()->name }}</span>
+            <form action="{{ route('logout') }}" method="POST" class="ml-auto">
+                @csrf
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-2 rounded">
+                    Log out
+                </button>
+            </form>
+        </div>
     </nav>
 
     <main class="mx-auto max-w-5xl px-6 py-8">

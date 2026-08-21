@@ -1,5 +1,4 @@
 @props([
-    'users' => [],
     'project' => null,
 ])
 
@@ -13,27 +12,6 @@
     @if ($project)
         @method('PATCH')
     @endif
-
-    <div>
-        <label for="user_id">Owner</label>
-
-        <select id="user_id" name="user_id" class="rounded-lg p-1 border border-gray-300">
-            <option value="">Select an owner</option>
-
-            @foreach ($users as $user)
-                <option
-                    value="{{ $user->id }}"
-                    @selected(old('user_id', $project?->user_id) == $user->id)
-                >
-                    {{ $user->name }}
-                </option>
-            @endforeach
-        </select>
-
-        @error('user_id')
-            <p class="text-sm text-red-600">{{ $message }}</p>
-        @enderror
-    </div>
 
     <div>
         <label for="name">Name</label>

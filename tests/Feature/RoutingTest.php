@@ -2,8 +2,10 @@
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 
 test('dashboard route returns correct response', function () {
+    $this->actingAs(User::factory()->create());
     $response = $this->get('/');
 
     $response->assertSuccessful()
@@ -11,6 +13,7 @@ test('dashboard route returns correct response', function () {
 });
 
 test('project show route returns correct response', function () {
+    $this->actingAs(User::factory()->create());
     $project = Project::factory()->create([
         'name' => 'Certification project',
     ]);
@@ -28,12 +31,14 @@ test('project show route returns correct response', function () {
 });
 
 test('project show route returns 404 for non-existent project', function () {
+    $this->actingAs(User::factory()->create());
     $response = $this->get(route('projects.show', ['project' => 999]));
 
     $response->assertNotFound();
 });
 
 test('task show route returns correct response', function () {
+    $this->actingAs(User::factory()->create());
     $project = Project::factory()->create();
     $task = $project->tasks()->create([
         'title' => 'Test Task',
@@ -50,6 +55,7 @@ test('task show route returns correct response', function () {
 });
 
 test('a task must belong to the project in the route', function () {
+    $this->actingAs(User::factory()->create());
     $project = Project::factory()->create();
     $differentProject = Project::factory()->create();
     $task = Task::factory()->for($differentProject)->create();
@@ -59,7 +65,10 @@ test('a task must belong to the project in the route', function () {
 });
 
 test('project index route returns correct response', function () {
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+
+    $this->actingAs($user);
 
     $this->get(route('projects.index'))
         ->assertSuccessful()

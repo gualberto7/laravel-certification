@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,7 +15,8 @@ class ProjectController extends Controller
      */
     public function index(): View
     {
-        $projects = Project::query()
+        $projects = auth()->user()
+            ->projects()
             ->withCount('tasks')
             ->latest()
             ->get();
@@ -31,9 +31,7 @@ class ProjectController extends Controller
      */
     public function create(): View
     {
-        return view('projects.create', [
-            'users' => User::orderBy('name')->get(),
-        ]);
+        return view('projects.create');
     }
 
     /**
@@ -41,7 +39,7 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $project = Project::create($request->validated());
+        $project = auth()->user()->projects()->create($request->validated());
 
         return redirect()
             ->route('projects.show', $project)
@@ -67,7 +65,6 @@ class ProjectController extends Controller
     {
         return view('projects.edit', [
             'project' => $project,
-            'users' => User::orderBy('name')->get(),
         ]);
     }
 
