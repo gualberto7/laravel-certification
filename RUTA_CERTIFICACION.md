@@ -329,7 +329,7 @@ Usar esta tabla como marcador de progreso:
 | J2. Base de datos, migraciones y Eloquent CRUD | Completado | 4 migraciones; relaciones, factories, seeders, scopes y eager loading; 7 pruebas y 23 aserciones |
 | J3. Routing y controllers | Completado | Controllers resource e invocable; rutas nombradas y anidadas con scoped binding; 12 pruebas y 31 aserciones |
 | J4. Blade, formularios y validación | Completado | Layout y componentes Blade; formularios reutilizables; 4 Form Requests; CRUD probado con 24 tests y 90 aserciones |
-| J5. Autenticación y middleware | En curso | Guard `web`, provider Eloquent y sesiones revisados; autenticación manual sin starter kit |
+| J5. Autenticación y middleware | Completado | Login/logout por sesión; middleware `auth`, `guest` y propiedad; ownership backend; 33 tests y 118 aserciones |
 | J6. Collections, cache y colas | Pendiente | |
 | J7. Proyecto y evaluación Junior | Pendiente | |
 | M1. Eloquent intermedio y rendimiento | Bloqueado hasta completar Junior | |

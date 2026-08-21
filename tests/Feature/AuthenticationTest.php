@@ -43,7 +43,7 @@ test('a user can log out', function () {
 test('login view displays correctly', function () {
     $response = $this->get('/login');
 
-    $response->assertStatus(200)
+    $response->assertSuccessful()
         ->assertSee('Login')
         ->assertSee('Email')
         ->assertSee('Password')

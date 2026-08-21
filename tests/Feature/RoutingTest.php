@@ -13,21 +13,34 @@ test('dashboard route returns correct response', function () {
 });
 
 test('project show route returns correct response', function () {
-    $this->actingAs(User::factory()->create());
+    $user = User::factory()->create();
     $project = Project::factory()->create([
         'name' => 'Certification project',
+        'user_id' => $user->id,
     ]);
 
-    Task::factory()->for($project)->create([
+    Task::factory()->create([
         'title' => 'Learn Blade',
+        'project_id' => $project->id,
     ]);
 
+    $this->actingAs($user);
     $this->get(route('projects.show', $project))
         ->assertSuccessful()
         ->assertViewIs('projects.show')
         ->assertViewHas('project')
         ->assertSee('Certification project')
         ->assertSee('Learn Blade');
+});
+
+test('a project cannot be accessed by a different user', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', $project));
+
+    $response->assertForbidden();
 });
 
 test('project show route returns 404 for non-existent project', function () {
@@ -38,12 +51,13 @@ test('project show route returns 404 for non-existent project', function () {
 });
 
 test('task show route returns correct response', function () {
-    $this->actingAs(User::factory()->create());
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
     $task = $project->tasks()->create([
         'title' => 'Test Task',
     ]);
 
+    $this->actingAs($user);
     $response = $this->get(route('projects.tasks.show', [$project, $task]));
 
     $response->assertSuccessful()

@@ -38,7 +38,7 @@
             </div>
 
             <div>
-                <input type="checkbox" name="remember" id="remember" class="rounded" value="1">
+                <input type="checkbox" name="remember" id="remember" class="rounded" value="1" @checked(old('remember'))>
                 <label for="remember">Remember me</label>
             </div>
 

@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->group(function () {
     Route::get('/', DashboardController::class)->name('home');
 
-    Route::resource('projects', ProjectController::class);
+    Route::resource('projects', ProjectController::class)
+        ->middlewareFor(
+            ['show', 'edit', 'update', 'destroy'],
+            'project.owner'
+        );
 
     Route::resource('projects.tasks', TaskController::class)
-        ->scoped();
+        ->scoped()
+        ->middleware('project.owner');
 });
 
 Route::middleware('guest')->group(function () {

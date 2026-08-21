@@ -30,7 +30,7 @@ test('a user can create a project', function () {
     $this->assertModelExists($project);
 });
 
-test('create project page shows the available owners', function () {
+test('create project page shows the correct form', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -43,9 +43,9 @@ test('create project page shows the available owners', function () {
         ->assertSee('Create project');
 });
 
-test('a project can be updated', function () {
-    $project = Project::factory()->create();
+test('a project can be updated by its owner', function () {
     $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
 
     $response = $this->patch(route('projects.update', $project), [
@@ -58,6 +58,25 @@ test('a project can be updated', function () {
         ->assertSessionHas('status', 'Project updated.');
 
     $this->assertDatabaseHas('projects', [
+        'id' => $project->id,
+        'name' => 'Updated project name',
+        'description' => 'Updated project description',
+    ]);
+});
+
+test('a project cannot be updated by a different user', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->patch(route('projects.update', $project), [
+        'name' => 'Updated project name',
+        'description' => 'Updated project description',
+    ]);
+
+    $response->assertForbidden();
+
+    $this->assertDatabaseMissing('projects', [
         'id' => $project->id,
         'name' => 'Updated project name',
         'description' => 'Updated project description',

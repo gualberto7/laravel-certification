@@ -60,6 +60,20 @@ test('a task can be created for a project', function () {
     expect($task->project->is($project))->toBeTrue();
 });
 
+test('a task cannot be created for a project by a different user', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->post(route('projects.tasks.store', $project), [
+        'title' => 'New task',
+        'description' => 'Task description',
+        'status' => 'pending',
+    ]);
+
+    $response->assertForbidden();
+});
+
 test('edit page displays the correct task', function () {
     $user = User::factory()->create();
     $project = Project::factory()->create(['user_id' => $user->id]);
@@ -113,4 +127,17 @@ test('a task can be deleted', function () {
         ->assertSessionHas('status', 'Task deleted');
 
     $this->assertModelMissing($task);
+});
+
+test('a task cannot be deleted by a different user', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $task = Task::factory()->create(['project_id' => $project->id]);
+    $this->actingAs($user);
+
+    $response = $this->delete(route('projects.tasks.destroy', [$project, $task]));
+
+    $response->assertForbidden();
+
+    $this->assertModelExists($task);
 });
