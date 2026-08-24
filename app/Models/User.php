@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class);
     }
+
+    public function dashboardCacheKey(): string
+    {
+        return "dashboard.summary.user.{$this->getKey()}";
+    }
 }

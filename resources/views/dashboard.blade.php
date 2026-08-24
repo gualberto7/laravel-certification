@@ -13,16 +13,16 @@
         <x-card>
             <h2 class="text-xl font-bold">Task Summary</h2>
             <p>Total Tasks: {{ $totalTasks }}</p>
-            <p>Pending Tasks: {{ $taskCounts->get('pending', 0) }}</p>
-            <p>In Progress Tasks: {{ $taskCounts->get('in_progress', 0) }}</p>
-            <p>Completed Tasks: {{ $taskCounts->get('completed', 0) }}</p>
+            <p>Pending Tasks: {{ $taskCounts['pending'] ?? 0 }}</p>
+            <p>In Progress Tasks: {{ $taskCounts['in_progress'] ?? 0 }}</p>
+            <p>Completed Tasks: {{ $taskCounts['completed'] ?? 0 }}</p>
         </x-card>
 
         @forelse ($overdueTasks as $task)
             <x-card class="mt-4">
-                <h3 class="text-lg font-bold">{{ $task->title }}</h3>
-                <p>Status: {{ ucfirst($task->status) }}</p>
-                <p>Due Date: {{ $task->due_at ? $task->due_at->format('Y-m-d H:i') : 'N/A' }}</p>
+                <h3 class="text-lg font-bold">{{ $task['title'] }}</h3>
+                <p>Status: {{ ucfirst($task['status']) }}</p>
+                <p>Due Date: {{ $task['due_at'] ?? 'N/A' }}</p>
             </x-card>
         @empty
             <p class="mt-4 text-slate-600">No overdue tasks.</p>

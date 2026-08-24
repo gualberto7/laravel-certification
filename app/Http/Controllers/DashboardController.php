@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -13,22 +15,57 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request): View
     {
-        $projects = $request->user()->projects()->with('tasks')->get();
+        $user = $request->user();
 
-        $tasks = $projects->pluck('tasks')->flatten(1);
-
-        $taskCounts = $tasks->groupBy('status')->map->count();
-
-        $overdueTasks = $tasks->filter(
-            fn (Task $task): bool => $task->due_at?->isPast()
-                && $task->status !== 'completed'
+        $summary = Cache::remember(
+            $user->dashboardCacheKey(),
+            now()->addMinutes(10),
+            fn (): array => $this->buildSummary($user),
         );
 
-        $totalTasks = $taskCounts->reduce(
-            fn (int $total, int $count): int => $total + $count,
-            0
-        );
+        return view('dashboard', $summary);
+    }
 
-        return view('dashboard', compact('taskCounts', 'overdueTasks', 'totalTasks'));
+    /**
+     * @return array{
+     *     taskCounts: array<string, int>,
+     *     overdueTasks: array<int, array{
+     *         title: string,
+     *         status: string,
+     *         due_at: string
+     *     }>,
+     *     totalTasks: int
+     * }
+     */
+    private function buildSummary(User $user): array
+    {
+        $tasks = $user->projects()
+            ->with('tasks')
+            ->get()
+            ->pluck('tasks')
+            ->flatten(1);
+
+        $taskCounts = $tasks
+            ->groupBy('status')
+            ->map
+            ->count();
+
+        $overdueTasks = $tasks
+            ->filter(
+                fn (Task $task): bool => $task->due_at?->isPast()
+                    && $task->status !== 'completed',
+            )
+            ->map(fn (Task $task): array => [
+                'title' => $task->title,
+                'status' => $task->status,
+                'due_at' => $task->due_at->format('Y-m-d H:i'),
+            ])
+            ->values();
+
+        return [
+            'taskCounts' => $taskCounts->all(),
+            'overdueTasks' => $overdueTasks->all(),
+            'totalTasks' => $taskCounts->sum(),
+        ];
     }
 }

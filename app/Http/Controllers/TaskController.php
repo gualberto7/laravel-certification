@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class TaskController extends Controller
@@ -36,6 +37,8 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request, Project $project): RedirectResponse
     {
         $project->tasks()->create($request->validated());
+
+        Cache::forget($request->user()->dashboardCacheKey());
 
         return redirect()
             ->route('projects.show', $project)
@@ -72,6 +75,8 @@ class TaskController extends Controller
     {
         $task->update($request->validated());
 
+        Cache::forget($request->user()->dashboardCacheKey());
+
         return redirect()
             ->route('projects.show', $project)
             ->with('status', 'Task updated');
@@ -83,6 +88,8 @@ class TaskController extends Controller
     public function destroy(Project $project, Task $task): RedirectResponse
     {
         $task->delete();
+
+        Cache::forget(auth()->user()->dashboardCacheKey());
 
         return redirect()
             ->route('projects.show', $project)
