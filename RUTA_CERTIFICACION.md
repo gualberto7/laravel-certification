@@ -330,7 +330,7 @@ Usar esta tabla como marcador de progreso:
 | J3. Routing y controllers | Completado | Controllers resource e invocable; rutas nombradas y anidadas con scoped binding; 12 pruebas y 31 aserciones |
 | J4. Blade, formularios y validación | Completado | Layout y componentes Blade; formularios reutilizables; 4 Form Requests; CRUD probado con 24 tests y 90 aserciones |
 | J5. Autenticación y middleware | Completado | Login/logout por sesión; middleware `auth`, `guest` y propiedad; ownership backend; 33 tests y 118 aserciones |
-| J6. Collections, cache y colas | En curso | Drivers `database` confirmados para cache y queue; inicio con resumen del dashboard |
+| J6. Collections, cache y colas | Completado | Resumen con Collections; cache por usuario e invalidación; job en database queue; 39 tests y 137 aserciones |
 | J7. Proyecto y evaluación Junior | Pendiente | |
 | M1. Eloquent intermedio y rendimiento | Bloqueado hasta completar Junior | |
 | M2. Routing, requests y middleware intermedios | Bloqueado hasta completar Junior | |

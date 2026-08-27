@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Jobs\LogProjectCreated;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -40,6 +41,8 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request): RedirectResponse
     {
         $project = auth()->user()->projects()->create($request->validated());
+
+        LogProjectCreated::dispatch($project);
 
         return redirect()
             ->route('projects.show', $project)

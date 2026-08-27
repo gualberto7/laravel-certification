@@ -1,7 +1,9 @@
 <?php
 
+use App\Jobs\LogProjectCreated;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 
 test('guests are redirected to login', function () {
     $this->get(route('projects.index'))
@@ -11,6 +13,8 @@ test('guests are redirected to login', function () {
 test('a user can create a project', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
+
+    Queue::fake();
 
     $response = $this->post(route('projects.store'), [
         'name' => 'Certification project',
@@ -28,6 +32,11 @@ test('a user can create a project', function () {
         ->assertSessionHas('status', 'Project created.');
 
     $this->assertModelExists($project);
+
+    Queue::assertPushed(
+        LogProjectCreated::class,
+        fn (LogProjectCreated $job): bool => $job->project->is($project),
+    );
 });
 
 test('create project page shows the correct form', function () {
