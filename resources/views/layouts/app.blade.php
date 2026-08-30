@@ -16,6 +16,7 @@
             </a>
 
             <a href="{{ route('projects.index') }}">Projects</a>
+            <a href="{{ route('tags.index') }}">Tags</a>
         </div>
 
         <div class="flex max-w-5xl items-center gap-6 py-4">
