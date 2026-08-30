@@ -5,6 +5,7 @@
 @section('content')
     <div class="flex items-center justify-between gap-4">
         <h1 class="text-3xl font-bold">Tags</h1>
+        <a href="{{ route('tags.create') }}">Add Tag</a>
     </div>
 
     <x-card class="mt-6">
