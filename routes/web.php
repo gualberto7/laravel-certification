@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
         ->scoped()
         ->middleware('project.owner');
 
-    Route::resource('tags', TagController::class);
+    Route::resource('tags', TagController::class)->except(['show']);
 });
 
 Route::middleware('guest')->group(function () {

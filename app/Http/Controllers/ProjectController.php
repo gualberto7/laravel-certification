@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
@@ -108,6 +109,8 @@ class ProjectController extends Controller
         abort_unless($project->user_id === auth()->id(), 403);
 
         $project->delete();
+
+        Cache::forget(auth()->user()->dashboardCacheKey());
 
         return redirect()
             ->route('projects.index')

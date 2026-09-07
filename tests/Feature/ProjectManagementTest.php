@@ -2,6 +2,7 @@
 
 use App\Jobs\LogProjectCreated;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
@@ -159,4 +160,38 @@ test('a user cannot delete a project they do not own', function () {
     $response->assertForbidden();
 
     $this->assertModelExists($project);
+});
+
+test('cache is cleared when a project is deleted', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $project = Project::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    cache()->put(auth()->user()->dashboardCacheKey(), 'cached value');
+
+    $this->assertTrue(cache()->has(auth()->user()->dashboardCacheKey()));
+
+    $this->delete(route('projects.destroy', $project));
+
+    $this->assertFalse(cache()->has(auth()->user()->dashboardCacheKey()));
+});
+
+test('tasks are deleted when a project is deleted', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $project = Project::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $task = Task::factory()->create([
+        'project_id' => $project->id,
+    ]);
+
+    $this->delete(route('projects.destroy', $project));
+
+    $this->assertModelMissing($task);
 });

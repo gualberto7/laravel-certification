@@ -32,7 +32,7 @@ class StoreTaskRequest extends FormRequest
             ],
             'due_at' => ['nullable', 'date'],
             'tags' => ['nullable', 'array'],
-            'tags.*' => ['integer', 'exists:tags,id'],
+            'tags.*' => ['integer', 'exists:tags,id', 'distinct'],
         ];
     }
 }

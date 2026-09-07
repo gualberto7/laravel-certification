@@ -183,6 +183,41 @@ test('a task can be created with tags', function () {
     );
 });
 
+test('cannot send repeated tags when creating a task', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $tag = Tag::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->post(route('projects.tasks.store', $project), [
+        'title' => 'New task',
+        'description' => 'Task description',
+        'status' => 'pending',
+        'tags' => [$tag->id, $tag->id],
+    ]);
+
+    $response->assertSessionHasErrors([
+        'tags.1' => 'The tags.1 field has a duplicate value.',
+    ]);
+});
+
+test('cannot send nonexistent tags when creating a task', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
+
+    $response = $this->post(route('projects.tasks.store', $project), [
+        'title' => 'New task',
+        'description' => 'Task description',
+        'status' => 'pending',
+        'tags' => [999],
+    ]);
+
+    $response->assertSessionHasErrors([
+        'tags.0' => 'The selected tags.0 is invalid.',
+    ]);
+});
+
 test('can sync tags when updating a task', function () {
     $user = User::factory()->create();
     $project = Project::factory()->create(['user_id' => $user->id]);
@@ -278,4 +313,34 @@ test('can filter by status and tag', function () {
         ->assertSuccessful()
         ->assertSee($task1->title)
         ->assertDontSee($task2->title);
+});
+
+test('invalid filters do not break the page', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', [
+        'project' => $project,
+        'status' => 'invalid_status',
+        'tag' => 'nonexistent_tag',
+    ]));
+
+    $response->assertSuccessful();
+});
+
+test('update page displays tags associated with the task', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $task = Task::factory()->create(['project_id' => $project->id]);
+    $tags = Tag::factory(3)->create();
+    $task->tags()->attach($tags->pluck('id')->toArray());
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.tasks.edit', [$project, $task]));
+
+    foreach ($tags as $tag) {
+        $response->assertSee($tag->name);
+        $response->assertSee('selected');
+    }
 });
