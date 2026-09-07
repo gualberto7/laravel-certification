@@ -8,9 +8,22 @@
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-3xl font-bold">{{ $project->name }}</h1>
 
-                <a href="{{ route('projects.edit', $project) }}">
-                    Update project
-                </a>
+                <div>
+                    <a href="{{ route('projects.edit', $project) }}">
+                        Update project
+                    </a>
+                    <form
+                        method="POST"
+                        action="{{ route('projects.destroy', $project) }}"
+                        onsubmit="return confirm('Are you sure?');"
+                        class="inline-block"
+                    >
+                        @csrf
+                        @method('DELETE')
+
+                        <button class="text-white bg-red-500 hover:bg-red-600 rounded px-1">Delete project</button>
+                    </form>
+                </div>
             </div>
 
             @if ($project->description)
