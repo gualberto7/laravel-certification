@@ -31,6 +31,48 @@
                 </a>
             </div>
 
+            <div class="flex flex-col gap-4 mt-4">
+                <h4 class="text-md font-semibold">Filters</h4>
+                <div class="flex gap-4">
+                    <span>Select status:</span>
+                    <a
+                        href="{{ route('projects.show', $project) }}"
+                        class="rounded bg-slate-200 px-2 py-1 text-xs"
+                    >
+                        All
+                    </a>
+                    <a
+                        href="{{ request()->fullUrlWithQuery(['status' => 'in_progress']) }}"
+                        class="rounded bg-slate-200 px-2 py-1 text-xs {{ request()->query('status') === 'in_progress' ? 'bg-blue-500 text-white' : '' }}"
+                    >
+                        In Progress
+                    </a>
+                    <a
+                        href="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}"
+                        class="rounded bg-slate-200 px-2 py-1 text-xs {{ request()->query('status') === 'pending' ? 'bg-blue-500 text-white' : '' }}"
+                    >
+                        Pending
+                    </a>
+                    <a
+                        href="{{ request()->fullUrlWithQuery(['status' => 'completed']) }}"
+                        class="rounded bg-slate-200 px-2 py-1 text-xs {{ request()->query('status') === 'completed' ? 'bg-blue-500 text-white' : '' }}"
+                    >
+                        Completed
+                    </a>
+                </div>
+                <div class="flex gap-2">
+                    <span>Select tag:</span>
+                    @foreach ($tags as $tag)
+                        <a
+                            href="{{ request()->fullUrlWithQuery(['tag' => $tag->name]) }}"
+                            class="rounded bg-slate-200 px-2 py-1 text-xs {{ request()->query('tag') === $tag->name ? 'bg-blue-500 text-white' : '' }}"
+                        >
+                            {{ $tag->name }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="mt-4 grid gap-4">
                 @forelse ($project->tasks as $task)
                     <x-card>

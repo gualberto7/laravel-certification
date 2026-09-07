@@ -6,7 +6,9 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Jobs\LogProjectCreated;
 use App\Models\Project;
+use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
@@ -52,12 +54,27 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project): View
+    public function show(Request $request, Project $project): View
     {
         $project->load('tasks.tags');
 
+        $status = $request->query('status');
+        if ($status) {
+            $project->tasks = $project->tasks->filter(function ($task) use ($status) {
+                return $task->status === $status;
+            });
+        }
+
+        $tag = $request->query('tag') ? Tag::where('name', $request->query('tag'))->first() : null;
+        if($tag) {
+            $project->tasks = $project->tasks->filter(function ($task) use ($tag) {
+                return $task->tags->contains($tag);
+            });
+        }
+
         return view('projects.show', [
             'project' => $project,
+            'tags' => Tag::all(),
         ]);
     }
 
