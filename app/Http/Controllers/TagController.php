@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTagRequest;
+use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
@@ -41,34 +42,36 @@ class TagController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Tag $tag): View
     {
-        //
+        return view('tags.edit', [
+            'tag' => $tag
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTagRequest $request, Tag $tag): RedirectResponse
     {
-        //
+        $tag->update($request->validated());
+
+        return redirect()
+            ->route('tags.index')
+            ->with('status', 'Tag updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Tag $tag): RedirectResponse
     {
-        //
+        $tag->delete();
+
+        return redirect()
+            ->route('tags.index')
+            ->with('status', 'Tag deleted.');
     }
 }
