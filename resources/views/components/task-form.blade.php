@@ -1,6 +1,7 @@
 @props([
     'project',
     'task' => null,
+    'tags' => [],
 ])
 
 <form
@@ -82,6 +83,29 @@
             class="rounded-lg p-1 border border-gray-300"
         >
         @error('due_at')
+            <p class="text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+
+    <div>
+        <label for="tags">Tags</label>
+        <select
+            id="tags"
+            name="tags[]"
+            multiple
+            class="rounded-lg p-1 border border-gray-300"
+        >
+            @foreach ($tags as $tag)
+                <option
+                    value="{{ $tag->id }}"
+                    @selected(in_array($tag->id, old('tags', $task?->tags->pluck('id')->toArray() ?? [])))
+                >
+                    {{ $tag->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('tags')
             <p class="text-sm text-red-600">{{ $message }}</p>
         @enderror
     </div>

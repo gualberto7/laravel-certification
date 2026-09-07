@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,7 @@ class TaskController extends Controller
     {
         return view('tasks.create', [
             'project' => $project,
+            'tags' => Tag::all(),
         ]);
     }
 
@@ -36,7 +38,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request, Project $project): RedirectResponse
     {
-        $project->tasks()->create($request->validated());
+        $task = $project->tasks()->create($request->validated());
+
+        $task->tags()->sync($request->input('tags', []));
 
         Cache::forget($request->user()->dashboardCacheKey());
 
@@ -65,6 +69,7 @@ class TaskController extends Controller
         return view('tasks.edit', [
             'project' => $project,
             'task' => $task,
+            'tags' => Tag::all(),
         ]);
     }
 
@@ -74,6 +79,7 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Project $project, Task $task): RedirectResponse
     {
         $task->update($request->validated());
+        $task->tags()->sync($request->input('tags', []));
 
         Cache::forget($request->user()->dashboardCacheKey());
 

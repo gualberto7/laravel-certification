@@ -31,6 +31,8 @@ class UpdateTaskRequest extends FormRequest
                 Rule::in(['pending', 'in_progress', 'completed']),
             ],
             'due_at' => ['nullable', 'date'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['integer', 'exists:tags,id'],
         ];
     }
 }

@@ -8,6 +8,6 @@
     </h1>
 
     <x-card class="mt-6">
-        <x-task-form :project="$project" />
+        <x-task-form :project="$project" :tags="$tags" />
     </x-card>
 @endsection
