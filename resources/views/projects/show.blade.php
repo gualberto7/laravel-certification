@@ -97,12 +97,12 @@
                                 <h3 class="font-semibold">{{ $task->title }}</h3>
                                 <small>{{ $task->due_at }}</small>
                             </div>
-                            <div>
+                            <div class="flex">
                                 <a
                                     href="{{ route('projects.tasks.edit', [$project, $task]) }}"
                                     class="text-xs"
                                 >
-                                    Edit
+                                    <x-icon.edit />
                                 </a>
                                 <form
                                     method="POST"
@@ -112,16 +112,18 @@
                                     @csrf
                                     @method('DELETE')
 
-                                    <button>Delete</button>
+                                    <button>
+                                        <x-icon.delete />
+                                    </button>
                                 </form>
                             </div>
                         </div>
 
                         <div class="mt-2 flex flex-wrap gap-2">
                             @foreach ($task->tags as $tag)
-                                <span class="rounded bg-slate-200 px-2 py-1 text-xs">
+                                <x-badge>
                                     {{ $tag->name }}
-                                </span>
+                                </x-badge>
                             @endforeach
                         </div>
                     </x-card>
