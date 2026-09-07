@@ -6,7 +6,6 @@ use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
 use Illuminate\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
 class TagController extends Controller

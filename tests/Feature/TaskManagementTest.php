@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 
@@ -140,4 +141,141 @@ test('a task cannot be deleted by a different user', function () {
     $response->assertForbidden();
 
     $this->assertModelExists($task);
+});
+
+test('create nad update task page has all tags', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $tags = Tag::factory(3)->create();
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.tasks.create', $project));
+
+    foreach ($tags as $tag) {
+        $response->assertSee($tag->name);
+    }
+
+    $task = Task::factory()->create(['project_id' => $project->id]);
+    $response = $this->get(route('projects.tasks.edit', [$project, $task]));
+
+    foreach ($tags as $tag) {
+        $response->assertSee($tag->name);
+    }
+});
+
+test('a task can be created with tags', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $tags = Tag::factory(3)->create();
+    $this->actingAs($user);
+
+    $this->post(route('projects.tasks.store', $project), [
+        'title' => 'New task',
+        'description' => 'Task description',
+        'status' => 'pending',
+        'tags' => $tags->pluck('id')->toArray(),
+    ]);
+
+    $task = Task::first();
+
+    expect($task->tags->pluck('id')->toArray())->toEqualCanonicalizing(
+        $tags->pluck('id')->toArray()
+    );
+});
+
+test('can sync tags when updating a task', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $task = Task::factory()->create(['project_id' => $project->id]);
+    $tags = Tag::factory(3)->create();
+    $task->tags()->attach($tags->pluck('id')->toArray());
+
+    expect($task->tags()->count() === 3);
+
+    $tag = Tag::factory()->create(['name' => 'Unrelated tag']);
+    $this->actingAs($user);
+
+    $this->patch(route('projects.tasks.update', [$project, $task]), [
+        'title' => 'Updated task',
+        'status' => 'pending',
+        'tags' => [$tag->id],
+    ]);
+
+    expect($task->fresh()->tags()->count() === 1);
+    expect($task->fresh()->tags()->first()->id)->toBe($tag->id);
+});
+
+test('can filter by status', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $task1 = Task::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'pending',
+    ]);
+    $task2 = Task::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'completed',
+    ]);
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', [
+        'project' => $project,
+        'status' => 'pending',
+    ]));
+
+    $response
+        ->assertSuccessful()
+        ->assertSee($task1->title)
+        ->assertDontSee($task2->title);
+});
+
+test('can filter by tag', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $tag1 = Tag::factory()->create();
+    $tag2 = Tag::factory()->create();
+    $task1 = Task::factory()->create(['project_id' => $project->id]);
+    $task2 = Task::factory()->create(['project_id' => $project->id]);
+    $task1->tags()->attach($tag1);
+    $task2->tags()->attach($tag2);
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', [
+        'project' => $project,
+        'tag' => $tag1->name,
+    ]));
+
+    $response
+        ->assertSuccessful()
+        ->assertSee($task1->title)
+        ->assertDontSee($task2->title);
+});
+
+test('can filter by status and tag', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    $tag1 = Tag::factory()->create();
+    $tag2 = Tag::factory()->create();
+    $task1 = Task::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'pending',
+    ]);
+    $task2 = Task::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'completed',
+    ]);
+    $task1->tags()->attach($tag1);
+    $task2->tags()->attach($tag2);
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', [
+        'project' => $project,
+        'status' => 'pending',
+        'tag' => $tag1->name,
+    ]));
+
+    $response
+        ->assertSuccessful()
+        ->assertSee($task1->title)
+        ->assertDontSee($task2->title);
 });

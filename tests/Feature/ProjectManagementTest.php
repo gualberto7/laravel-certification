@@ -130,3 +130,33 @@ test('a user can see only their own projects', function () {
         ->assertSee('User project')
         ->assertDontSee('Other project');
 });
+
+test('a user can delete their own project', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $project = Project::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $response = $this->delete(route('projects.destroy', $project));
+
+    $response
+        ->assertRedirectToRoute('projects.index')
+        ->assertSessionHas('status', 'Project deleted.');
+
+    $this->assertModelMissing($project);
+});
+
+test('a user cannot delete a project they do not own', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $project = Project::factory()->create();
+
+    $response = $this->delete(route('projects.destroy', $project));
+
+    $response->assertForbidden();
+
+    $this->assertModelExists($project);
+});
