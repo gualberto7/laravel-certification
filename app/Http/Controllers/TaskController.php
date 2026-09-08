@@ -15,14 +15,6 @@ use Illuminate\View\View;
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Project $project)
-    {
-        //
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create(Project $project): View

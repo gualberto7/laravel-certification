@@ -2,6 +2,7 @@
 
 use App\Jobs\LogProjectCreated;
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
@@ -191,7 +192,15 @@ test('tasks are deleted when a project is deleted', function () {
         'project_id' => $project->id,
     ]);
 
+    $tag = Tag::factory()->create();
+    $task->tags()->attach($tag);
+
     $this->delete(route('projects.destroy', $project));
 
     $this->assertModelMissing($task);
+
+    $this->assertDatabaseMissing('tag_task', [
+        'tag_id' => $tag->id,
+        'task_id' => $task->id,
+    ]);
 });

@@ -17,6 +17,7 @@ Route::middleware('auth')->group(function () {
         );
 
     Route::resource('projects.tasks', TaskController::class)
+        ->except(['index'])
         ->scoped()
         ->middleware('project.owner');
 

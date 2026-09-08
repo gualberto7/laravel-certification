@@ -49,6 +49,46 @@ test('cannot create a duplicate tag', function () {
     ])->assertSessionHasErrors('name');
 });
 
+test('cannot update with a duplicate tag name', function () {
+    $this->actingAs(User::factory()->create());
+
+    Tag::factory()->create([
+        'name' => 'Tag 1',
+    ]);
+
+    $tag2 = Tag::factory()->create([
+        'name' => 'Tag 2',
+    ]);
+
+    $this->put(route('tags.update', $tag2), [
+        'name' => 'Tag 1',
+    ])->assertSessionHasErrors('name');
+});
+
+test('tag name is required', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->post(route('tags.store'), [
+        'name' => '',
+    ])->assertSessionHasErrors('name');
+});
+
+test('tag name must be string', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->post(route('tags.store'), [
+        'name' => 123,
+    ])->assertSessionHasErrors('name');
+});
+
+test('tag name must be less than 50 characters', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->post(route('tags.store'), [
+        'name' => str_repeat('a', 51),
+    ])->assertSessionHasErrors('name');
+});
+
 test('can edit a tag', function () {
     $this->actingAs(User::factory()->create());
 
@@ -95,4 +135,6 @@ test('deleted tag is removed from tasks', function () {
         'tag_id' => $tag->id,
         'task_id' => $task->id,
     ]);
+
+    $this->assertModelExists($task);
 });
