@@ -331,13 +331,13 @@ Usar esta tabla como marcador de progreso:
 | J4. Blade, formularios y validación | Completado | Layout y componentes Blade; formularios reutilizables; 4 Form Requests; CRUD probado con 24 tests y 90 aserciones |
 | J5. Autenticación y middleware | Completado | Login/logout por sesión; middleware `auth`, `guest` y propiedad; ownership backend; 33 tests y 118 aserciones |
 | J6. Collections, cache y colas | Completado | Resumen con Collections; cache por usuario e invalidación; job en database queue; 39 tests y 137 aserciones |
-| J7. Proyecto y evaluación Junior | En curso | Evaluación integral: gestión y asignación de etiquetas, filtros y cierre del CRUD |
-| M1. Eloquent intermedio y rendimiento | Bloqueado hasta completar Junior | |
-| M2. Routing, requests y middleware intermedios | Bloqueado hasta completar Junior | |
-| M3. Validación y autorización | Bloqueado hasta completar Junior | |
-| M4. Events, listeners, queues y jobs | Bloqueado hasta completar Junior | |
-| M5. API Resources y Sanctum | Bloqueado hasta completar Junior | |
-| M6. Testing con Pest | Bloqueado hasta completar Junior | |
-| M7. Integridad, depuración y evaluación Mid-Level | Bloqueado hasta completar Junior | |
+| J7. Proyecto y evaluación Junior | Completado | CRUD integral con etiquetas y filtros; autorización, validación, cascadas e invalidación de cache; 64 pruebas y 213 aserciones |
+| M1. Eloquent intermedio y rendimiento | En curso | Carga anticipada restringida, filtros de relaciones y análisis de consultas |
+| M2. Routing, requests y middleware intermedios | Pendiente | |
+| M3. Validación y autorización | Pendiente | |
+| M4. Events, listeners, queues y jobs | Pendiente | |
+| M5. API Resources y Sanctum | Pendiente | |
+| M6. Testing con Pest | Pendiente | |
+| M7. Integridad, depuración y evaluación Mid-Level | Pendiente | |
 
 En la columna **Evidencia** se añade el commit, archivo o prueba que demuestra el dominio del bloque. Los estados admitidos son `Pendiente`, `En curso`, `Completado` y `Bloqueado hasta completar Junior`.
