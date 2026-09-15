@@ -344,3 +344,19 @@ test('update page displays tags associated with the task', function () {
         $response->assertSee('selected');
     }
 });
+
+test('it only shows tasks for the project', function () {
+    $user = User::factory()->create();
+    $project1 = Project::factory()->create(['user_id' => $user->id]);
+    $project2 = Project::factory()->create(['user_id' => $user->id]);
+    $task1 = Task::factory()->create(['project_id' => $project1->id]);
+    $task2 = Task::factory()->create(['project_id' => $project2->id]);
+    $this->actingAs($user);
+
+    $response = $this->get(route('projects.show', ['project' => $project1]));
+
+    $response
+        ->assertSuccessful()
+        ->assertSee($task1->title)
+        ->assertDontSee($task2->title);
+});

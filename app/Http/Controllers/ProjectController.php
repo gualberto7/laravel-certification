@@ -17,9 +17,9 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $projects = auth()->user()
+        $projects = $request->user()
             ->projects()
             ->withCount('tasks')
             ->latest()
@@ -43,7 +43,7 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $project = auth()->user()->projects()->create($request->validated());
+        $project = $request->user()->projects()->create($request->validated());
 
         LogProjectCreated::dispatch($project);
 
@@ -57,21 +57,17 @@ class ProjectController extends Controller
      */
     public function show(Request $request, Project $project): View
     {
-        $project->load('tasks.tags');
-
-        $status = $request->query('status');
-        if ($status) {
-            $project->tasks = $project->tasks->filter(function ($task) use ($status) {
-                return $task->status === $status;
-            });
-        }
-
-        $tag = $request->query('tag') ? Tag::where('name', $request->query('tag'))->first() : null;
-        if($tag) {
-            $project->tasks = $project->tasks->filter(function ($task) use ($tag) {
-                return $task->tags->contains($tag);
-            });
-        }
+        $project->load(['tasks' => function ($query) use ($request) {
+            $query->with('tags')
+                ->when($request->query('status'), function ($query) use ($request) {
+                    $query->where('status', $request->query('status'));
+                })
+                ->when($request->query('tag'), function ($query) use ($request) {
+                    $query->whereHas('tags', function ($query) use ($request) {
+                        $query->where('name', $request->query('tag'));
+                    });
+                });
+        }]);
 
         return view('projects.show', [
             'project' => $project,
@@ -104,13 +100,13 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project): RedirectResponse
+    public function destroy(Request $request, Project $project): RedirectResponse
     {
-        abort_unless($project->user_id === auth()->id(), 403);
+        abort_unless($project->user_id === $request->user()->id, 403);
 
         $project->delete();
 
-        Cache::forget(auth()->user()->dashboardCacheKey());
+        Cache::forget($request->user()->dashboardCacheKey());
 
         return redirect()
             ->route('projects.index')
