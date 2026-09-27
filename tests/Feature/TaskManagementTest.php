@@ -4,6 +4,7 @@ use App\Models\Project;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 test('create task page displays the project title', function () {
     $user = User::factory()->create();
@@ -359,4 +360,25 @@ test('it only shows tasks for the project', function () {
         ->assertSuccessful()
         ->assertSee($task1->title)
         ->assertDontSee($task2->title);
+});
+
+test('it only shows tasks', function() {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+    Task::factory()->count(10)->create(['project_id' => $project->id]);
+    $this->actingAs($user);
+
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+
+    $response = $this->get(route('projects.show', $project));
+
+    $queries = DB::getQueryLog();
+
+    dump(count($queries));
+    dump(collect($queries)->pluck('query'));
+
+    DB::disableQueryLog();
+
+    $response->assertSuccessful();
 });
